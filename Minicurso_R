@@ -1,0 +1,361 @@
+# ACRESCENTANDO OBJETOS NA ÁREA DE TRABALHO
+x = 1
+x
+
+y = 1:10
+y
+
+z = -1
+z
+
+v = w = 3
+v
+
+nome  = "maria"
+nome
+
+altura = NA
+altura
+
+vazio  = NULL
+vazio
+
+logico1 = FALSE
+logico1
+
+logico2 = T
+logico2
+
+vetor=c(1,2,4,3,5,6,7,4,2)
+vetor
+
+matriz = matrix(c(1,2,4,
+                  3,5,6,
+                  7,4,2),ncol=3)
+matriz
+
+matriz2 = matrix(vetor,ncol=3)
+matriz2
+
+df = data.frame(1:20,20:1)
+df
+
+lista = list(matriz,df,logico1)
+lista
+
+# Operações
+
+(x = seq(2, 20 , 4))
+(y = c(3,4,6,7,13))
+x + y
+2*x # ou:
+rep(2,5)*x
+rep(2,4)*x # erro
+3*(x+y)
+x - y # ou:
+x + (-1)*y
+x + 2
+x^2
+log(x)
+x*y
+x/y
+x%%y # resto da divisão
+x%/%y # divisão inteira
+
+# CALCULANDO O PRODUTO INTERNO ENTRE VETORES
+help("%*%")
+x%*%y
+
+x%*%t(y)
+
+
+# REALIZANDO OPERAÇÕES ELEMENTARES COM MATRIZES
+(A = matrix(1:9, nrow=3))
+(B = matrix(seq(2,18, 2), nrow=3))
+A + B
+4*A
+A - B
+
+# OBTENDO A TRANSPOSTA DE UMA MATRIZ
+A
+t(A)
+
+# REALIZANDO MULTIPLICAÇÃO ENTRE MATRIZES
+A%*%B # é diferente de:
+A*B
+
+t(A)%*%A #A'A
+
+
+# CALCULANDO O DETERMINANTE DE UMA MATRIZ
+set.seed(10)
+(C = matrix(sample(1:9, 9, replace=T), nrow=3))
+det(C)
+
+# CALCULANDO A INVERSA DE UMA MATRIZ
+solve(C)
+
+# OBTENDO A SOLUÇÃO DO SISTEMA Cx = b
+(b = c(3, 2, 1))
+(x = solve(C, b))
+C%*%x
+
+
+# GERANDO NÚMEROS ALEATÓRIOS
+#NORMAL
+rnorm(5,mean=5,sd=2)
+#EXPONENCIAL
+rexp(n=5,rate = 1)
+#POISSON
+rpois(n=5,lambda=10)
+
+
+#OPERADORES LÓGICOS
+
+1>2
+4<3
+1==1
+1!=1
+c(1,4,6,4,9)%in%4
+
+#ESTATÍSTICAS SUMÁRIAS
+
+C
+summary(C)
+
+y
+mean(y)
+
+median(y)
+
+min(y);max(y)
+
+library(dplyr)
+#Testes iris
+
+iris %>% 
+  select(Petal.Width,Species) %>%
+  filter(Species=="virginica") %>%
+  summarise(mean(Petal.Width))
+
+
+iris %>% 
+  select(Petal.Width,Species) %>%
+  group_by(Species) %>%
+  summarise(mean(Petal.Width))
+
+expiris= exp(iris %>% 
+  arrange(Petal.Length) %>% 
+  select(Petal.Length))
+
+expiris
+
+iris %>% 
+  select(Petal.Width) %>% 
+  mutate(exponencial=exp(Petal.Width)) %>%
+  select(exponencial) %>% 
+  arrange(-exponencial) 
+
+#---------------------------------------------------------------------------------------------------------------------
+## Ggplot2
+
+
+# Cores
+
+?mpg
+head(mpg)
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer))
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer, fill=as.factor(cyl)), colour= "black")
+
+#
+
+#install.packages("colorspace")
+#library(colorspace)
+
+mpg$cyl <- as.factor(mpg$cyl)
+cols <-  rainbow_hcl(4, start =150, end =360)
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer, fill=as.factor(cyl)), colour= "white")+
+  scale_fill_manual(values = cols)
+
+
+# Titulo e nomes dos eixos
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer, fill=as.factor(cyl)), colour= "white")+
+  scale_fill_manual(values = cols)+
+  labs(
+    title = "Frequência da quantidade de cilindros por manufaturadora",
+    x = "Manufaturadora",
+    y = "Porcentagem",
+    fill = "Cilindros"
+  )
+
+# Temas
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer, fill=as.factor(cyl)), colour= "white")+
+  scale_fill_manual(values = cols)+
+  labs(
+    title = "Frequência da quantidade de cilindros por manufaturadora",
+    x = "Manufaturadora",
+    y = "Porcentagem",
+    fill = "Cilindros"
+  )+
+  theme_minimal()
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer, fill=as.factor(cyl)), colour= "white")+
+  scale_fill_manual(values = cols)+
+  labs(
+    title = "Frequência da quantidade de cilindros por manufaturadora",
+    x = "Manufaturadora",
+    y = "Porcentagem",
+    fill = "Cilindros"
+  )+
+  theme_minimal()+  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Anotações
+
+#install.packages("ggrepel")
+#library(ggrepel)
+
+melhor_por_classe <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_text(aes(label = model), data = melhor_por_classe)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_point(aes(colour = class), shape = 3, size = 3, data = melhor_por_classe)+
+  geom_label_repel(aes(label = model), data = melhor_por_classe, alpha = 0.5)
+
+
+melhor_por_classe2 <- mpg %>%
+  summarise(displ = max(displ),
+            hwy = max(hwy),
+            label = "Podemos notar que há uma tendência de que \n quanto mais cilindradas o carro tiver, menos \n milhas por galão ele fará."
+  )
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_text(aes(label=label), data = melhor_por_classe2, vjust = "top", hjust = "right", size = 3)+
+  geom_label_repel(aes(label = model), data = melhor_por_classe, alpha = 0.5)
+
+
+# Escalas
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer, fill=as.factor(cyl)), colour= "black", position = "fill")+
+  scale_fill_manual(values = cols)+
+  labs(
+    title = "Frequência da quantidade de cilindros por manufaturadora",
+    x = "Manufaturadora",
+    y = "Porcentagem",
+    fill = "Cilindros"
+  )+  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(mpg)+
+  geom_bar(aes(x=manufacturer, fill=as.factor(cyl)), colour= "black", position = "fill")+
+  scale_fill_manual(values = cols)+
+  labs(
+    title = "Frequência da quantidade de cilindros por manufaturadora",
+    x = "Manufaturadora",
+    y = "Porcentagem",
+    fill = "Cilindros"
+  )+
+  scale_y_continuous(labels=percent)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  scale_y_continuous(breaks = seq(0,40,5))
+
+# Legendas
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class))+
+  theme(legend.position = "bottom")+
+  labs(
+    title = "Gráfico de dispersão de cilindradas por milhas por galão.",
+    x = "Cilindradas",
+    y = "Milhas por galão",
+    fill = "Cilindros"
+  )
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class))+
+  theme(legend.position = "bottom")+
+  labs(
+    title = "Gráfico de dispersão de cilindradas por milhas por galão.",
+    x = "Cilindradas",
+    y = "Milhas por galão",
+    fill = "Cilindros"
+  )+
+  guides(colour = guide_legend(nrow = 1, override.aes = list(size = 4)))
+
+
+# Aplicação
+
+ano <- mpg %>%
+  select(cty,displ,hwy)
+
+ano_g <- gather(ano, "variaveis", "valores", -displ)
+
+ggplot(ano_g,aes(x= valores, y = displ, colour = as.factor(variaveis)))+
+  geom_point()
+
+ano_g <- ano_g %>%
+  mutate(variaveis = ifelse(variaveis=="cty","Cidade","Rodovia"))
+
+theme_set(theme_minimal())
+
+ggplot(ano_g,aes(x= valores, y = displ, colour = as.factor(variaveis)))+
+  geom_point()+
+  facet_wrap(~variaveis,ncol = 2)+
+  labs(
+    title = "Gráfico de dispersão de cilindradas x milhas/galão",
+    x = "galões",
+    y = "volume de deslocamento (litros)",
+    colour = "Tipo"
+  )+
+  guides(colour = guide_legend(nrow = 1, override.aes = list(size = 4)))+
+  theme(legend.position = "bottom",panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),panel.grid.minor.y = element_blank())
+
+
+# Ggplot2
+
+## Ggplot2
+
+O pacote ggplot2 é uma adaptação da gramática dos gráficos para o software R. O objetivo do mesmo é a criação de gráficos intuítivos, de rápido entendimento e criativos, visando expandir a capacidade do usuário de "contar uma história" a partir dos dados.  
+
+## Livros recomendados
+
+Storytelling with data, R for data science, The R Graphics Cookbook.
+
+## Uso
+
+A utilização do pacote dependerá da experiência e criatividade do usuário, porém, existem uma espécie de "receita" para o seu uso:
+  
+  1. Comece adicionando a função \textcolor{blue}{ggplot()}, e forneça os dados e o argumento \textcolor{blue}{aes()}, que irá ditar características o usuário quer usar para a análise. 
+2. Após, utilizar a função \textcolor{blue}{geom\_} para identificar o tipo de gráfico que iremos. 
+3. E então adicionamos detalhes específicos, como escala, coordenadas e etc.
+
+## Tipos comuns de geoms
+
+- \textcolor{blue}{geom\_histogram()}
+- \textcolor{blue}{geom\_bar()}
+- \textcolor{blue}{geom\_boxplot()}
+- \textcolor{blue}{geom\_line()}
+
+
